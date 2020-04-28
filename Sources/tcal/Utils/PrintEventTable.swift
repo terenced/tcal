@@ -6,9 +6,9 @@ import SwiftyTextTable
 private func printStatus(_ status: EventStatus) -> String {
     switch status {
     case .done:
-        return "✅"
+        return "✓"
     case .now:
-        return "🎯"
+        return "→"
     case .future:
         return "→"
     }
@@ -19,7 +19,7 @@ private func printDesc(_ text: String, isDone: Bool) -> String {
     return isDone ? formattedText.s.Strikethrough : formattedText.s.Bold
 }
 
-func printEventTable(_ events: [TcalEvent]?) {
+func printEventTable(_ events: [Event]?) {
     if events?.count == 0 {
         print("👾 All done!".f.Cyan)
         return
@@ -48,11 +48,21 @@ func printEventTable(_ events: [TcalEvent]?) {
             printDesc(event.title, isDone: event.isDone),
         ])
         if event.hasZoom {
+            let head = event.zoomLinks.first
+            let rest = event.zoomLinks.dropFirst()
+
             table.addRow(values: [
                 "",
                 event.startDate.toRelative().s.Italic,
-                event.zoomLink!.s.Italic.f.Yellow,
+                head!.link.s.Italic.f.Yellow,
             ])
+            rest.forEach {
+                table.addRow(values: [
+                    "",
+                    "",
+                    $0.link.s.Italic.f.Yellow,
+                ])
+            }
         }
         table.addRow(values: [])
     }

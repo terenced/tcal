@@ -1,5 +1,6 @@
 import EventKit
 import Guaka
+import SwiftDate
 
 var rootCommand = Command(
     usage: "tcal",
@@ -9,24 +10,41 @@ var rootCommand = Command(
 
 private func configuration(command: Command) {
     command.add(flags: [
-        // Add your flags here
+        Flag(shortName: "t", longName: "today", value: true, description: "Show today's events"),
+        Flag(shortName: "y", longName: "yesterday", value: false, description: "Show yesterday's events"),
+        Flag(shortName: "2", longName: "tomorrow", value: false, description: "Show tomorrow's events"),
     ])
 
     // Other configurations
 }
 
-private func execute(flags _: Flags, args _: [String]) {
+private func execute(flags: Flags, args _: [String]) {
     let store = EKEventStore()
 
-//    let startDate = Date().dateAt(.tomorrowAtStart)
-//    let endDate = Date().dateAt(.tomorrow).dateAt(.endOfDay)
-    let startDate = Date().dateAt(.startOfDay)
-    let endDate = Date().dateAt(.endOfDay)
+    let localRegion = Region(calendar: Calendar.current, zone: Zones.current)
+
+    var startDate = DateInRegion(region: localRegion).dateAt(.startOfDay).date
+    var endDate = DateInRegion(region: localRegion).dateAt(.endOfDay).date
+
+    if let tomorrow = flags.getBool(name: "tomorrow"), tomorrow == true {
+        startDate = DateInRegion(region: localRegion).dateAt(.tomorrowAtStart).date
+        endDate = DateInRegion(region: localRegion).dateAt(.tomorrow).dateAt(.endOfDay).date
+    } else if let yesterday = flags.getBool(name: "yesterday"), yesterday == true {
+        startDate = DateInRegion(region: localRegion).dateAt(.yesterdayAtStart).date
+        endDate = DateInRegion(region: localRegion).dateAt(.yesterday).dateAt(.endOfDay).date
+    }
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .full
+    dateFormatter.timeStyle = .none
+
+    let when = dateFormatter.string(from: startDate)
+    print(when.s.Bold)
 
     var predicate: NSPredicate?
     predicate = store.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
 
     if let aPredicate = predicate {
-        printEventTable(store.events(matching: aPredicate).map { TcalEvent($0) })
+        printEventTable(store.events(matching: aPredicate).map { Event($0) })
     }
 }
