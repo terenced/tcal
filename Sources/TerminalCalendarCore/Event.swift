@@ -1,13 +1,13 @@
 import EventKit
 import Foundation
 
-enum EventStatus {
+public enum EventStatus {
     case done
     case now
     case future
 }
 
-class Event {
+public class Event {
     private var event: EKEvent
     var startDate: Date {
         return event.startDate
@@ -27,7 +27,7 @@ class Event {
 
     var status: EventStatus {
         let now = Date()
-        if now.isBetween(startDate, and: endDate) {
+        if now.inRange(startDate, and: endDate) {
             return EventStatus.now
         } else if endDate <= now {
             return EventStatus.done
@@ -75,7 +75,7 @@ class Event {
         return !zoomLinks.isEmpty
     }
 
-    init(_ event: EKEvent) {
+    public init(_ event: EKEvent) {
         self.event = event
     }
 }

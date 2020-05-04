@@ -19,7 +19,7 @@ private func printDesc(_ text: String, isDone: Bool) -> String {
     return isDone ? formattedText.s.Strikethrough : formattedText.s.Bold
 }
 
-func printEventTable(_ events: [Event]?) {
+public func printEventTable(_ events: [Event]?) {
     if events?.count == 0 {
         print("👾 All done!".f.Cyan)
         return
