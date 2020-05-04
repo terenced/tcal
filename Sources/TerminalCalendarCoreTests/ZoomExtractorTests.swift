@@ -7,8 +7,14 @@ func getId() -> Int {
 }
 
 class ZoomExtractorTests: XCTestCase {
+    var faker: Faker!
+    var id: String = ""
+    
+    override func setUp() {
+        faker = Faker()
+        id = String(faker.number.randomInt(min: 100000000, max: 12 * 100000000))
+    }
     func testFindZoomLink() throws {
-        let id = getId()
         let content = "https://text.zoom.us/j/\(id)"
         let links = findZoomLinks(content)
         XCTAssertFalse(links.isEmpty)
@@ -23,8 +29,6 @@ class ZoomExtractorTests: XCTestCase {
     }
     
     func testFindZoomLinkWithPassword() throws {
-        let id = getId()
-        let faker = Faker()
         let password = faker.internet.password(minimumLength: 20, maximumLength: 100)
         let domain = faker.internet.domainWord()
         let content = "https://\(domain).zoom.us/j/\(id)?pwd=\(password)"
