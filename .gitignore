@@ -1,0 +1,13 @@
+### SwiftPackageManager ###
+Packages/
+Package.pins
+Package.resolved
+.build/
+xcuserdata
+DerivedData/
+*.xcodeproj
+
+# Add this line if you want to avoid checking in Xcode SPM integration.
+.swiftpm/xcode
+
+.DS_Store
